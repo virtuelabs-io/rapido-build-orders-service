@@ -1,2 +1,3 @@
-# rapido-build-order-service
-Service for Rapido Build orders
+# Orders Service
+
+Service responsible for all customer orders

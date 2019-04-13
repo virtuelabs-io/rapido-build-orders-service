@@ -1,0 +1,56 @@
+{
+  "name": "rapido-build-order-service",
+  "version": "1.0.0",
+  "description": "Rapido Build Order Service",
+  "scripts": {
+    "test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html",
+    "codecov": "npm run test & npm run codecov",
+    "dev-deploy": "serverless deploy --stage stage",
+    "prod-deploy": "serverless deploy --stage prod",
+    "dev-remove": "serverless remove --stage stage",
+    "prod-remove": "serverless remove --stage prod",
+    "lint": "./node_modules/.bin/eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virtuelabs-io/rapido-build-order-service.git"
+  },
+  "author": "Sangram Reddy",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.421.0",
+    "aws-sdk-mock": "^4.3.1",
+    "codecov": "^3.2.0",
+    "jest": "^24.5.0",
+    "jest-junit": "^6.3.0",
+    "jest-junit-reporter": "^1.1.0",
+    "json-loader": "^0.5.7",
+    "prettier": "^1.16.4",
+    "serverless": "^1.38.0",
+    "serverless-domain-manager": "^3.1.0",
+    "serverless-offline": "^4.9.0",
+    "serverless-webpack": "^5.2.0",
+    "webpack": "^4.29.6"
+  },
+  "keywords": [
+    "rapido-build",
+    "service",
+    "orders"
+  ],
+  "dependencies": {
+    "mysql": "^2.16.0",
+    "node-fetch": "^2.3.0",
+    "serverless-mysql": "^1.2.1"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
+  },
+  "jest-junit": {
+    "output": "./test/junit.xml"
+  },
+  "bugs": {
+    "url": "https://github.com/virtuelabs-io/rapido-build-order-service/issues"
+  },
+  "homepage": "https://github.com/virtuelabs-io/rapido-build-order-service#readme"
+}
