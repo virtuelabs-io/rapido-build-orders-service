@@ -1,7 +1,7 @@
 {
-  "name": "rapido-build-order-service",
+  "name": "rapido-build-orders-service",
   "version": "1.0.0",
-  "description": "Rapido Build Order Service",
+  "description": "Rapido Build Orders Service",
   "scripts": {
     "test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html",
     "codecov": "npm run test & npm run codecov",

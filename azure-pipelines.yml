@@ -1,0 +1,84 @@
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+trigger:
+  branches:
+    include:
+    - master
+    - feature/*
+    - bug/*
+
+pr:
+  branches:
+    include:
+    - master
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '8.x'
+
+- script: |
+    pip install setuptools
+    pip install awscli
+  displayName: 'Installing AWS CLI'
+
+- task: Npm@1
+  displayName: 'npm install'
+  inputs:
+    command: install
+
+- task: Npm@1
+  displayName: 'npm run test'
+  inputs:
+    command: custom
+    customCommand: 'run test'
+
+- task: PublishTestResults@2
+  displayName: 'Publishing test results'
+  condition: succeededOrFailed()
+  inputs:
+    testRunner: JUnit
+    testResultsFiles: '**/junit.xml'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publishing code coverage'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/coverage'
+
+- task: Npm@1
+  displayName: 'Deploying functions to DEV'
+  inputs:
+    command: custom
+    customCommand: 'run dev-deploy'
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+    COGNITO_ARN: $(COGNITO_ARN)
+    HOST: $(HOST)
+    PORT: $(PORT)
+    USERNAME: $(USERNAME)
+    PASSWORD: $(PASSWORD)
+    DATABASE: $(DATABASE)
+    CERTIFICATE_ARN: $(CERTIFICATE_ARN)
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+
+- task: Npm@1
+  displayName: 'Deploying functions to PROD'
+  inputs:
+    command: custom
+    customCommand: 'run dev-deploy' # will be changed to prod when we are going to go live
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+    COGNITO_ARN: $(COGNITO_ARN)
+    HOST: $(HOST)
+    PORT: $(PORT)
+    USERNAME: $(USERNAME)
+    PASSWORD: $(PASSWORD)
+    DATABASE: $(DATABASE)
+    CERTIFICATE_ARN: $(CERTIFICATE_ARN)
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
