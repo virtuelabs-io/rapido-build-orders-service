@@ -70,7 +70,7 @@ steps:
   displayName: 'Deploying functions to PROD'
   inputs:
     command: custom
-    customCommand: 'run dev-deploy' # will be changed to prod when we are going to go live
+    customCommand: 'run dev-deploy'  # will be changed to prod when we are going to go live
   env:
     AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
