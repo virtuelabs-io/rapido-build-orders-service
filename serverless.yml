@@ -213,10 +213,10 @@ functions:
       PASSWORD: ${self:provider.password}
     tags:
       purpose: lambda function to getOrderPrice
-  checkOrderPurchase:
-    name: checkOrderPurchase-${self:provider.stage}
+  checkProductPurchase:
+    name: checkProductPurchase-${self:provider.stage}
     role: OrdersFunctionsLambdaRole
-    handler: src/orders/checkOrderPurchase.fun
+    handler: src/orders/checkProductPurchase.fun
     memorySize: 128
     timeout: 10
     environment:
@@ -226,7 +226,7 @@ functions:
       USERNAME: ${self:provider.username}
       PASSWORD: ${self:provider.password}
     tags:
-      purpose: lambda function to checkOrderPurchase
+      purpose: lambda function to checkProductPurchase
 
 
 resources:
