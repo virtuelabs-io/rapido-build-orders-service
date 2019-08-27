@@ -213,6 +213,20 @@ functions:
       PASSWORD: ${self:provider.password}
     tags:
       purpose: lambda function to getOrderPrice
+  checkOrderPurchase:
+    name: checkOrderPurchase-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/checkOrderPurchase.fun
+    memorySize: 128
+    timeout: 10
+    environment:
+      HOST: ${self:provider.host}
+      PORT: ${self:provider.port}
+      DATABASE: ${self:provider.database}
+      USERNAME: ${self:provider.username}
+      PASSWORD: ${self:provider.password}
+    tags:
+      purpose: lambda function to checkOrderPurchase
 
 
 resources:
