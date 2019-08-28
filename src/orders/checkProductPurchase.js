@@ -1,4 +1,3 @@
-// headless
 'use strict';
 
 const mysql = require('serverless-mysql')({
@@ -15,7 +14,7 @@ module.exports.fun = async (event, context, callback) => {
     global.fetch = require('node-fetch');
     console.log(event)
     let customer_id = event.cognitoPoolClaims.sub
-    let product_id = Number(event.body.product_id)
+    let product_id = Number(event.path.id)
     let query = `
         CALL orders.check_product_purchase(UUID_TO_BIN(?),?);
     `;
