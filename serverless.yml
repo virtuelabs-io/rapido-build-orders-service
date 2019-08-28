@@ -227,6 +227,40 @@ functions:
       PASSWORD: ${self:provider.password}
     tags:
       purpose: lambda function to checkProductPurchase
+    events:
+      - http:
+          path: /orders/checkProductPurchase/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
+          integration: lambda
+          authorizer:
+            name: authorizer
+            arn: ${self:provider.cognito-arn}
+            claims:
+              - phone_number
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Content-Type
+              - Authorization
+  checkProductPurchaseHeadless:
+    name: checkProductPurchaseHeadless-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/checkProductPurchase.fun
+    memorySize: 128
+    timeout: 10
+    environment:
+      HOST: ${self:provider.host}
+      PORT: ${self:provider.port}
+      DATABASE: ${self:provider.database}
+      USERNAME: ${self:provider.username}
+      PASSWORD: ${self:provider.password}
+    tags:
+      purpose: lambda function to checkProductPurchaseHeadless
 
 
 resources:
