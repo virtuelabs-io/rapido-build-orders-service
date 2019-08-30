@@ -247,6 +247,31 @@ functions:
             headers:
               - Content-Type
               - Authorization
+  getDeliveryOptions:
+    name: getDeliveryOptions-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/getDeliveryOptions.fun
+    memorySize: 128
+    timeout: 10
+    environment:
+      HOST: ${self:provider.host}
+      PORT: ${self:provider.port}
+      DATABASE: ${self:provider.database}
+      USERNAME: ${self:provider.username}
+      PASSWORD: ${self:provider.password}
+    tags:
+      purpose: lambda function to getDeliveryOptions
+    events:
+      - http:
+          path: /orders/getDeliveryOptions
+          method: get
+          integration: lambda
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Content-Type
+              - Authorization
   checkProductPurchaseHeadless:
     name: checkProductPurchaseHeadless-${self:provider.stage}
     role: OrdersFunctionsLambdaRole
