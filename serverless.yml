@@ -2,15 +2,16 @@ service: OrderService
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   stage: dev
-  region: eu-west-2
+  region: ${opt:region, 'eu-west-2'}
   host: ${env:HOST}
   port: ${env:PORT}
   database: ${env:DATABASE}
   username: ${env:USERNAME}
   password: ${env:PASSWORD}
   cognito-arn: ${env:COGNITO_ARN}
+  # sqs-queue-url: ${env:SQS_QUEUE_URL}
   logRetentionInDays: 7
 #   tracing:
 #     lambda: true
@@ -71,14 +72,16 @@ functions:
     name: confirmOrder-${self:provider.stage}
     role: OrdersFunctionsLambdaRole
     handler: src/orders/confirmOrder.fun
-    memorySize: 128
-    timeout: 10
+    memorySize: 256
+    timeout: 30
     environment:
       HOST: ${self:provider.host}
       PORT: ${self:provider.port}
       DATABASE: ${self:provider.database}
       USERNAME: ${self:provider.username}
       PASSWORD: ${self:provider.password}
+      REGION: ${self:provider.region}
+      SQL_QUEUE_URL: !Ref OrderConfirmationQueue
     tags:
       purpose: lambda function to confirmOrder
     events:
@@ -101,6 +104,12 @@ functions:
             headers:
               - Content-Type
               - Authorization
+  DummyExecutor:
+    name: DummyExec-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/dummy.fun
+    memorySize: 256
+    timeout: 300
   cancelOrder:
     name: cancelOrder-${self:provider.stage}
     role: OrdersFunctionsLambdaRole
@@ -301,6 +310,8 @@ resources:
                   - lambda.amazonaws.com
               Action: "sts:AssumeRole"
         Path: /
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         Policies:
           - PolicyName: logs
             PolicyDocument:
@@ -327,3 +338,36 @@ resources:
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
                 Resource: "*"
+    OrderConfirmationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.stage}-order-confirmation-queue
+        DelaySeconds: 5
+        MaximumMessageSize: 262144
+        MessageRetentionPeriod: 345600
+        VisibilityTimeout: 60
+        Tags:
+          - Key: Purpose
+            Value: OrderQueueing
+          - Key: Environment
+            Value: ${self:provider.stage}
+    OrderConfirmationQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - { "Fn::GetAtt" : ["OrdersFunctionsLambdaRole", "Arn"]}
+            Action:
+            - sqs:SendMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+            - sqs:GetQueueUrl
+            - sqs:ListQueues
+            - sqs:ReceiveMessage
+            - sqs:SetQueueAttributes
+            Resource: "*"
+        Queues:
+          - !Ref OrderConfirmationQueue
