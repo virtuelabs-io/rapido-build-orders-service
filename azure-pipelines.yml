@@ -88,6 +88,6 @@ steps:
     command: custom
     customCommand: 'run prod-deploy' # will be changed to prod when we are going to go live
   env:
-    AWS_ACCESS_KEY_ID: $(DEV_AWS_ACCESS_KEY_ID) # PROD_AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY: $(DEV_AWS_SECRET_ACCESS_KEY) # PROD_AWS_SECRET_ACCESS_KEY
+    AWS_ACCESS_KEY_ID: $(PROD_AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(PROD_AWS_SECRET_ACCESS_KEY)
   condition: startsWith(variables['build.sourceBranch'], 'refs/tags/v')
