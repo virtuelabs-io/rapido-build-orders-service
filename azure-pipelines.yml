@@ -76,7 +76,7 @@ steps:
   displayName: 'Deploying functions to STAGE'
   inputs:
     command: custom
-    customCommand: 'run dev-deploy' # will be changed to stage when we are going to go live
+    customCommand: 'run stage-deploy'
   env:
     AWS_ACCESS_KEY_ID: $(DEV_AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(DEV_AWS_SECRET_ACCESS_KEY)
@@ -86,7 +86,7 @@ steps:
   displayName: 'Deploying functions to PROD'
   inputs:
     command: custom
-    customCommand: 'run prod-deploy' # will be changed to prod when we are going to go live
+    customCommand: 'run stage-deploy' # TODO: run prod-deploy
   env:
     AWS_ACCESS_KEY_ID: $(PROD_AWS_ACCESS_KEY_ID)
     AWS_SECRET_ACCESS_KEY: $(PROD_AWS_SECRET_ACCESS_KEY)
