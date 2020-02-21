@@ -7,6 +7,9 @@ trigger:
     - master
     - feature/*
     - bug/*
+  tags:
+    include:
+    - v*
 
 pr:
   branches:
@@ -23,6 +26,16 @@ steps:
     pip install setuptools
     pip install awscli
   displayName: 'Installing AWS CLI'
+
+- script: |
+    git clone https://github.com/elasticdog/transcrypt.git
+    cd transcrypt/
+    sudo ln -s ${PWD}/transcrypt /usr/local/bin/transcrypt
+    cd ../
+    transcrypt --yes -c aes-256-cbc -p $ENCRYPTED_BY_ME
+  displayName: 'Transcript Initialization'
+  env:
+    ENCRYPTED_BY_ME: $(ENCRYPTED_BY_ME)
 
 - task: Npm@1
   displayName: 'npm install'
@@ -55,30 +68,26 @@ steps:
     command: custom
     customCommand: 'run dev-deploy'
   env:
-    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-    COGNITO_ARN: $(COGNITO_ARN)
-    HOST: $(HOST)
-    PORT: $(PORT)
-    USERNAME: $(USERNAME)
-    PASSWORD: $(PASSWORD)
-    DATABASE: $(DATABASE)
-    CERTIFICATE_ARN: $(CERTIFICATE_ARN)
-  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    AWS_ACCESS_KEY_ID: $(DEV_AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(DEV_AWS_SECRET_ACCESS_KEY)
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+
+- task: Npm@1
+  displayName: 'Deploying functions to STAGE'
+  inputs:
+    command: custom
+    customCommand: 'run dev-deploy' # will be changed to stage when we are going to go live
+  env:
+    AWS_ACCESS_KEY_ID: $(DEV_AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(DEV_AWS_SECRET_ACCESS_KEY)
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: Npm@1
   displayName: 'Deploying functions to PROD'
   inputs:
     command: custom
-    customCommand: 'run dev-deploy'  # will be changed to prod when we are going to go live
+    customCommand: 'run prod-deploy' # will be changed to prod when we are going to go live
   env:
-    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-    COGNITO_ARN: $(COGNITO_ARN)
-    HOST: $(HOST)
-    PORT: $(PORT)
-    USERNAME: $(USERNAME)
-    PASSWORD: $(PASSWORD)
-    DATABASE: $(DATABASE)
-    CERTIFICATE_ARN: $(CERTIFICATE_ARN)
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    AWS_ACCESS_KEY_ID: $(DEV_AWS_ACCESS_KEY_ID) # PROD_AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $(DEV_AWS_SECRET_ACCESS_KEY) # PROD_AWS_SECRET_ACCESS_KEY
+  condition: startsWith(variables['build.sourceBranch'], 'refs/tags/v')

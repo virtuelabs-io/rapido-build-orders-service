@@ -3,15 +3,15 @@ service: OrderService
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:region, 'dev'}
   region: ${opt:region, 'eu-west-2'}
-  host: ${env:HOST}
-  port: ${env:PORT}
-  database: ${env:DATABASE}
-  username: ${env:USERNAME}
-  password: ${env:PASSWORD}
-  cognito-arn: ${env:COGNITO_ARN}
-  # sqs-queue-url: ${env:SQS_QUEUE_URL}
+  host: ${file(./config/${self:provider.stage}.json):database.host}
+  port: ${file(./config/${self:provider.stage}.json):database.port}
+  database: ${file(./config/${self:provider.stage}.json):database.database}
+  username: ${file(./config/${self:provider.stage}.json):database.username}
+  password: ${file(./config/${self:provider.stage}.json):database.password}
+  cognito-arn: ${file(./config/${self:provider.stage}.json):cognito-arn}
+  # sqs-queue-url: ${file(./config/${self:provider.stage}.json):sqs-queue-url}
   logRetentionInDays: 7
 #   tracing:
 #     lambda: true
@@ -19,12 +19,8 @@ provider:
   logs:
     restApi: true
   vpc:
-    securityGroupIds:
-      - sg-bdeab9d6
-    subnetIds:
-      - subnet-9c76e2f5
-      - subnet-be6d8af2
-      - subnet-e9b86893
+    securityGroupIds: ${file(./config/${self:provider.stage}.json):securityGroupIds}
+    subnetIds: ${file(./config/${self:provider.stage}.json):subnetIds}
 package:
   individually: true
   excludeDevDependencies: true
