@@ -9,6 +9,8 @@
     "prod-deploy": "serverless deploy --stage prod",
     "dev-remove": "serverless remove --stage dev",
     "prod-remove": "serverless remove --stage prod",
+    "stage-deploy": "serverless deploy --stage stage",
+    "stage-remove": "serverless remove --stage stage",
     "lint": "./node_modules/.bin/eslint src"
   },
   "author": "Sangram Reddy",
