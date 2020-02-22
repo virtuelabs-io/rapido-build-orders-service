@@ -336,6 +336,19 @@ resources:
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
                 Resource: "*"
+          - PolicyName: SQSAccess
+            PolicyDocument:
+              Statement:
+                Effect: Allow
+                Action:
+                  - "sqs:SendMessage"
+                  - "sqs:DeleteMessage"
+                  - "sqs:GetQueueAttributes"
+                  - "sqs:GetQueueUrl"
+                  - "sqs:ListQueues"
+                  - "sqs:ReceiveMessage"
+                  - "sqs:SetQueueAttributes"
+                Resource: { "Fn::GetAtt" : ["OrderConfirmationQueue", "Arn"]}
     OrderConfirmationQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -349,23 +362,23 @@ resources:
             Value: OrderQueueing
           - Key: Environment
             Value: ${self:provider.stage}
-    OrderConfirmationQueuePolicy:
-      Type: AWS::SQS::QueuePolicy
-      Properties:
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Principal:
-              AWS:
-                - { "Fn::GetAtt" : ["OrdersFunctionsLambdaRole", "Arn"]}
-            Action:
-            - sqs:SendMessage
-            - sqs:DeleteMessage
-            - sqs:GetQueueAttributes
-            - sqs:GetQueueUrl
-            - sqs:ListQueues
-            - sqs:ReceiveMessage
-            - sqs:SetQueueAttributes
-            Resource: "*"
-        Queues:
-          - !Ref OrderConfirmationQueue
+    # OrderConfirmationQueuePolicy:
+    #   Type: AWS::SQS::QueuePolicy
+    #   Properties:
+    #     PolicyDocument:
+    #       Statement:
+    #       - Effect: Allow
+    #         Principal:
+    #           AWS:
+    #             - { "Fn::GetAtt" : ["OrdersFunctionsLambdaRole", "Arn"]}
+    #         Action:
+    #         - sqs:SendMessage
+    #         - sqs:DeleteMessage
+    #         - sqs:GetQueueAttributes
+    #         - sqs:GetQueueUrl
+    #         - sqs:ListQueues
+    #         - sqs:ReceiveMessage
+    #         - sqs:SetQueueAttributes
+    #         Resource: "*"
+    #     Queues:
+    #       - !Ref OrderConfirmationQueue
