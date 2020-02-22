@@ -29,6 +29,14 @@ module.exports.fun = async (event, context, callback) => {
     `;
     console.log("Running query", query);
     let results = await mysql.query(query, [ customer_id, order_id, data.charge_id ])
+
+    let message = {
+        "results": results,
+        "metadata": {
+            "receiptEmail": data.receiptEmail,
+            "guest": false
+        }
+    }
     await mysql.end()
     var params = {
         DelaySeconds: 5,
@@ -42,7 +50,7 @@ module.exports.fun = async (event, context, callback) => {
                 StringValue: "7"
             }
         },
-        MessageBody: JSON.stringify(results),
+        MessageBody: JSON.stringify(message),
         QueueUrl: process.env.SQS_QUEUE_URL
     };
     console.log("Firing message to: ", process.env.SQS_QUEUE_URL);
