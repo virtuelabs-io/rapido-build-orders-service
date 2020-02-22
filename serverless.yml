@@ -3,7 +3,7 @@ service: OrderService
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${opt:region, 'dev'}
+  stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-2'}
   host: ${file(./config/${self:provider.stage}.json):database.host}
   port: ${file(./config/${self:provider.stage}.json):database.port}
