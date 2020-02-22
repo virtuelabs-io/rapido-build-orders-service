@@ -29,6 +29,10 @@ module.exports.fun = async (event, context, callback) => {
     `;
     console.log("Running query", query);
     let results = await mysql.query(query, [ customer_id, order_id, data.charge_id ])
+    results._metadata = {
+        "receiptEmail": data.receiptEmail,
+        "guest": false
+    }
     await mysql.end()
     var params = {
         DelaySeconds: 5,
