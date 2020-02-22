@@ -6,7 +6,7 @@ module.exports.fun = async (event, context, callback) => {
     AWS.config.update({region: process.env.REGION});
     // Create an SQS service object
     var sqs = new AWS.SQS({apiVersion: '2012-11-05'});
-
+    console.log("Firing message to: ", process.env.SQS_QUEUE_URL);
     var params = {
         DelaySeconds: 5,
         MessageAttributes: {
@@ -20,7 +20,7 @@ module.exports.fun = async (event, context, callback) => {
             }
         },
         MessageBody: "Some message",
-        QueueUrl: "https://sqs.eu-west-2.amazonaws.com/007938441437/dev-order-confirmation-queue"
+        QueueUrl: process.env.SQS_QUEUE_URL
     };
 
     const response = await sqs.sendMessage(params).promise();

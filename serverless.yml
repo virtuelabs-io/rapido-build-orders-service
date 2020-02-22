@@ -11,7 +11,7 @@ provider:
   username: ${file(./config/${self:provider.stage}.json):database.username}
   password: ${file(./config/${self:provider.stage}.json):database.password}
   cognito-arn: ${file(./config/${self:provider.stage}.json):cognito-arn}
-  # sqs-queue-url: ${file(./config/${self:provider.stage}.json):sqs-queue-url}
+#   sqs-queue-url: ${file(./config/${self:provider.stage}.json):sqs-queue-url}
   logRetentionInDays: 7
 #   tracing:
 #     lambda: true
@@ -77,7 +77,7 @@ functions:
       USERNAME: ${self:provider.username}
       PASSWORD: ${self:provider.password}
       REGION: ${self:provider.region}
-      SQL_QUEUE_URL: !Ref OrderConfirmationQueue
+      SQS_QUEUE_URL: !Ref OrderConfirmationQueue
     tags:
       purpose: lambda function to confirmOrder
     events:
@@ -100,12 +100,14 @@ functions:
             headers:
               - Content-Type
               - Authorization
-  DummyExecutor:
-    name: DummyExec-${self:provider.stage}
-    role: OrdersFunctionsLambdaRole
-    handler: src/orders/dummy.fun
-    memorySize: 256
-    timeout: 300
+#   DummyExecutor:
+#     name: DummyExec-${self:provider.stage}
+#     role: OrdersFunctionsLambdaRole
+#     handler: src/orders/dummy.fun
+#     memorySize: 256
+#     timeout: 300
+#     environment:
+#       SQS_QUEUE_URL: !Ref OrderConfirmationQueue
   cancelOrder:
     name: cancelOrder-${self:provider.stage}
     role: OrdersFunctionsLambdaRole

@@ -30,27 +30,27 @@ module.exports.fun = async (event, context, callback) => {
     console.log("Running query", query);
     let results = await mysql.query(query, [ customer_id, order_id, data.charge_id ])
     await mysql.end()
-    // var params = {
-    //     DelaySeconds: 5,
-    //     MessageAttributes: {
-    //         "Author": {
-    //             DataType: "String",
-    //             StringValue: data.description
-    //         },
-    //         "WeeksOn": {
-    //             DataType: "Number",
-    //             StringValue: "7"
-    //         }
-    //     },
-    //     MessageBody: JSON.stringify(results),
-    //     QueueUrl: process.env.SQL_QUEUE_URL
-    // };
-    // console.log("Firing message to: ", process.env.SQL_QUEUE_URL);
-    // const response = await sqs.sendMessage(params).promise();
-    // if(response) {
-    //     console.log("Message queued to SQS successfully: ", response);
-    // } else {
-    //     console.log("Message queued failed");
-    // }
+    var params = {
+        DelaySeconds: 5,
+        MessageAttributes: {
+            "Author": {
+                DataType: "String",
+                StringValue: data.description
+            },
+            "WeeksOn": {
+                DataType: "Number",
+                StringValue: "7"
+            }
+        },
+        MessageBody: JSON.stringify(results),
+        QueueUrl: process.env.SQS_QUEUE_URL
+    };
+    console.log("Firing message to: ", process.env.SQS_QUEUE_URL);
+    const response = await sqs.sendMessage(params).promise();
+    if(response) {
+        console.log("Message queued to SQS successfully: ", response);
+    } else {
+        console.log("Message queued failed");
+    }
     return results
 }
