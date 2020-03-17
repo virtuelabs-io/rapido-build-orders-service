@@ -100,6 +100,61 @@ functions:
             headers:
               - Content-Type
               - Authorization
+  frequentlyBoughtByMe:
+    name: frequentlyBoughtByMe-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/getFrequentlyBoughtByMe.fun
+    memorySize: 256
+    timeout: 30
+    environment:
+      HOST: ${self:provider.host}
+      PORT: ${self:provider.port}
+      DATABASE: ${self:provider.database}
+      USERNAME: ${self:provider.username}
+      PASSWORD: ${self:provider.password}
+    tags:
+      purpose: lambda function to retrive frequently bought products by a user
+    events:
+      - http:
+          path: /orders/frequently-bought-by-me
+          method: get
+          integration: lambda
+          authorizer:
+            name: authorizer
+            arn: ${self:provider.cognito-arn}
+            claims:
+              - phone_number
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Content-Type
+              - Authorization
+  frequentlyBought:
+    name: frequentlyBought-${self:provider.stage}
+    role: OrdersFunctionsLambdaRole
+    handler: src/orders/getFrequentlyBought.fun
+    memorySize: 256
+    timeout: 30
+    environment:
+      HOST: ${self:provider.host}
+      PORT: ${self:provider.port}
+      DATABASE: ${self:provider.database}
+      USERNAME: ${self:provider.username}
+      PASSWORD: ${self:provider.password}
+    tags:
+      purpose: lambda function to retrive frequently bought products
+    events:
+      - http:
+          path: /orders/frequently-bought
+          method: get
+          integration: lambda
+          cors:
+            origins:
+              - '*'
+            headers:
+              - Content-Type
+              - Authorization
 #   DummyExecutor:
 #     name: DummyExec-${self:provider.stage}
 #     role: OrdersFunctionsLambdaRole
