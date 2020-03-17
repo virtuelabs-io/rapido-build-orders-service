@@ -411,7 +411,7 @@ resources:
         DelaySeconds: 5
         MaximumMessageSize: 262144
         MessageRetentionPeriod: 345600
-        VisibilityTimeout: 60
+        VisibilityTimeout: 120
         Tags:
           - Key: Purpose
             Value: OrderQueueing
