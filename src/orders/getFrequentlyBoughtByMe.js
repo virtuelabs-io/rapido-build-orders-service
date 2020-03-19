@@ -15,11 +15,13 @@ module.exports.fun = async (event, context, callback) => {
     global.fetch = require('node-fetch');
     let customer_id = event.customer_id
     let query = `
-        SELECT product_id,
-               count(*) as frequency
-        FROM orders.item
-        WHERE customer_id = UUID_TO_BIN(?)
-        GROUP BY product_id
+        SELECT i.product_id as product_id,
+               count(i.product_id) as frequency
+        FROM orders.header h
+        INNER JOIN orders.item i
+            ON h.id = i.order_id
+            AND h.customer_id = UUID_TO_BIN(?)
+        GROUP BY i.product_id
         ORDER BY frequency DESC
         LIMIT 10;`
     console.log("Running query", query);
